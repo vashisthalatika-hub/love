@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chat</title>
+
+<style>
+body {
+  margin:0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background:#0b141a;
+  overflow:hidden;
+}
+
+/* Chat screen */
+#chatPage {
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#efeae2;
+}
+
+/* Header */
+.header {
+  background:#202c33;
+  color:white;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.avatar {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#666;
+}
+
+.name {
+  font-weight:600;
+}
+
+/* Chat area */
+.chat {
+  flex:1;
+  padding:15px;
+  overflow:auto;
+  background-image:url("https://i.imgur.com/6Iej2c3.png");
+}
+
+.msg {
+  background:white;
+  padding:10px 12px;
+  border-radius:8px;
+  width:max-content;
+  max-width:75%;
+  margin-bottom:10px;
+  font-size:15px;
+  box-shadow:0 1px 1px rgba(0,0,0,0.2);
+}
+
+.link {
+  color:#00a884;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+/* Valentine page */
+#valentinePage {
+  display:none;
+  height:100vh;
+  background:linear-gradient(pink,#ff5fa2);
+  text-align:center;
+  padding-top:120px;
+  position:relative;
+  color:white;
+}
+
+button {
+  font-size:20px;
+  padding:12px 24px;
+  margin:10px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  position:relative;
+}
+
+#yesBtn { background:red;color:white; }
+#noBtn { background:white;border:2px solid black;position:absolute; }
+
+#finalMsg {
+  display:none;
+  font-size:26px;
+  margin-top:30px;
+}
+
+/* floating hearts */
+.heart {
+  position:absolute;
+  color:white;
+  font-size:24px;
+  animation: float 6s linear infinite;
+}
+
+@keyframes float {
+  from { transform:translateY(100vh); opacity:1; }
+  to { transform:translateY(-10vh); opacity:0; }
+}
+
+canvas {
+  position:fixed;
+  top:0;
+  left:0;
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Casual chat -->
+<div id="chatPage">
+  <div class="header">
+    <div class="avatar"></div>
+    <div class="name">I</div>
+  </div>
+
+  <div class="chat">
+    <div class="msg">Hey… are you busy?</div>
+    <div class="msg">I found something funny online 😂</div>
+    <div class="msg">
+      click this 👉 
+      <span class="link" onclick="openValentine()">open</span>
+    </div>
+  </div>
+</div>
+
+<!-- Surprise -->
+<div id="valentinePage">
+  <h1>Sumit… will you be mine? ❤️</h1>
+
+  <button id="yesBtn">YES</button>
+  <button id="noBtn">NO</button>
+
+  <div id="finalMsg">
+    You just made me the happiest person alive 💘
+  </div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<!-- Voice -->
+<audio id="voice">
+<source src="https://cdn.pixabay.com/audio/2023/03/30/audio_8f2a7bda68.mp3">
+</audio>
+
+<script>
+const chatPage=document.getElementById("chatPage");
+const valentinePage=document.getElementById("valentinePage");
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const finalMsg=document.getElementById("finalMsg");
+const voice=document.getElementById("voice");
+
+function openValentine(){
+  chatPage.style.display="none";
+  valentinePage.style.display="block";
+  hearts();
+}
+
+/* running NO */
+noBtn.addEventListener("mouseover",()=>{
+  noBtn.style.left=Math.random()*window.innerWidth+"px";
+  noBtn.style.top=Math.random()*window.innerHeight+"px";
+});
+
+/* YES click */
+yesBtn.addEventListener("click",()=>{
+  finalMsg.style.display="block";
+  voice.play();
+  fireworkBurst();
+});
+
+/* floating hearts */
+function hearts(){
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText="❤️";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=(20+Math.random()*30)+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),6000);
+  },500);
+}
+
+/* fireworks */
+const canvas=document.getElementById("fx");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+let particles=[];
+
+function fireworkBurst(){
+  for(let i=0;i<150;i++){
+    particles.push({
+      x:canvas.width/2,
+      y:canvas.height/2,
+      angle:Math.random()*Math.PI*2,
+      speed:Math.random()*6+2,
+      life:100
+    });
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach((p,i)=>{
+    p.x+=Math.cos(p.angle)*p.speed;
+    p.y+=Math.sin(p.angle)*p.speed;
+    p.life--;
+    ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
+    ctx.fillRect(p.x,p.y,3,3);
+    if(p.life<=0) particles.splice(i,1);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
